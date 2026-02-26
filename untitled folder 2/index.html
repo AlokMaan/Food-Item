@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="FoodDash — premium food ordering and delivery with live tracking. Order burgers, pizza, biryani and more.">
+    <title>FoodDash — Smart Food Ordering & Delivery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">
+                <span class="logo-icon">🍔</span>
+                <span class="logo-text">Food<span class="logo-accent">Dash</span></span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+                <li><a href="#menu" class="nav-link" data-section="menu">Menu</a></li>
+                <li><a href="#cart" class="nav-link" data-section="cart">
+                        Order Cart
+                        <span class="cart-badge" id="cartBadge">0</span>
+                    </a></li>
+                <li><a href="#map" class="nav-link" data-section="map">Live Map</a></li>
+                <li><a href="#history" class="nav-link" data-section="history">Orders History</a></li>
+            </ul>
+            <div class="nav-user-area" id="navUserArea">
+                <span class="nav-user-name" id="navUserName"></span>
+                <button class="btn-logout" id="logoutBtn" onclick="handleLogout()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    Logout
+                </button>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <section id="home" class="section hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge">🚀 Lightning Fast Delivery</div>
+            <h1 class="hero-title">Delicious Food,<br><span class="text-gradient">Delivered Fresh</span></h1>
+            <p class="hero-subtitle">Order from the best restaurants near you. Fresh ingredients, bold flavors,
+                delivered to your door in minutes.</p>
+            <div class="hero-actions">
+                <a href="#menu" class="btn btn-primary btn-lg">
+                    <span>Explore Menu</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </a>
+                <a href="#map" class="btn btn-outline btn-lg">
+                    <span>Track Order</span>
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Happy Customers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Menu Items</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">30</span>
+                    <span class="stat-label">Min Delivery</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-card card-1">
+                <span>🍕</span>
+                <div><strong>Pizza</strong><br><small>Just ordered!</small></div>
+            </div>
+            <div class="floating-card card-2">
+                <span>⭐</span>
+                <div><strong>4.9 Rating</strong><br><small>2k+ reviews</small></div>
+            </div>
+            <div class="floating-card card-3">
+                <span>🚴</span>
+                <div><strong>15 min</strong><br><small>Arriving soon</small></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="menu" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Our Menu</span>
+                <h2 class="section-title">Explore Our <span class="text-gradient">Delicious</span> Menu</h2>
+                <p class="section-desc">Handcrafted with the freshest ingredients, each dish is a masterpiece of flavor.
+                </p>
+            </div>
+            <div class="menu-grid" id="menuGrid"></div>
+        </div>
+    </section>
+
+    <section id="cart" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Your Cart</span>
+                <h2 class="section-title">Review Your <span class="text-gradient">Order</span></h2>
+            </div>
+            <div class="cart-layout">
+                <div class="cart-items-container">
+                    <div class="cart-items" id="cartItems">
+                        <div class="cart-empty" id="cartEmpty">
+                            <div class="empty-icon">🛒</div>
+                            <h3>Your cart is empty</h3>
+                            <p>Add delicious items from our menu to get started!</p>
+                            <a href="#menu" class="btn btn-primary">Browse Menu</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="cart-sidebar">
+                    <div class="cart-summary glass-card">
+                        <h3 class="summary-title">Order Summary</h3>
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span id="subtotal">₹0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tax (5%)</span>
+                            <span id="tax">₹0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee</span>
+                            <span id="deliveryFee">₹40.00</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row summary-total">
+                            <span>Total</span>
+                            <span id="totalBill">₹0.00</span>
+                        </div>
+                    </div>
+                    <div class="order-form glass-card" id="orderForm">
+                        <h3 class="summary-title">Delivery Details</h3>
+                        <div class="form-group">
+                            <label for="customerName">Full Name</label>
+                            <input type="text" id="customerName" placeholder="Enter your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Phone Number</label>
+                            <input type="tel" id="customerPhone" placeholder="Enter phone number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerAddress">Delivery Address</label>
+                            <textarea id="customerAddress" rows="3" placeholder="Enter full address"
+                                required></textarea>
+                        </div>
+                        <div class="form-total">
+                            <span>Amount to Pay</span>
+                            <span id="formTotal">₹0.00</span>
+                        </div>
+                        <button class="btn btn-primary btn-block" id="placeOrderBtn" disabled>
+                            <span>Place Order</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="map" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Live Tracking</span>
+                <h2 class="section-title">Track Your <span class="text-gradient">Delivery</span></h2>
+                <p class="section-desc">Watch your order journey from the restaurant to your doorstep in real-time.</p>
+            </div>
+            <div class="map-wrapper glass-card">
+                <div id="deliveryMap"></div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot restaurant"></span>
+                        <span>FoodDash Restaurant</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot customer"></span>
+                        <span>Delivery Location</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="history" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Past Orders</span>
+                <h2 class="section-title">Your Order <span class="text-gradient">History</span></h2>
+                <p class="section-desc">View all your previous orders and reorder your favorites.</p>
+            </div>
+            <div class="orders-list" id="ordersList">
+                <div class="loading-spinner" id="ordersLoading">
+                    <div class="spinner"></div>
+                    <p>Loading orders...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🍔</span>
+                    <span class="logo-text">Food<span class="logo-accent">Dash</span></span>
+                    <p>Delivering happiness, one meal at a time.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#menu">Menu</a>
+                    <a href="#cart">Cart</a>
+                    <a href="#map">Track</a>
+                    <a href="#history">History</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 FoodDash. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
